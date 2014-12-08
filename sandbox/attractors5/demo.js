@@ -17,11 +17,13 @@ function init() {
   canvas.addEventListener( 'mousedown', onMousedown, false );
 
   particle = new Particle( canvasW / 2, canvasH / 2 );
-  var x0 = canvasW * 0.3;
-  var x1 = canvasW * 0.8;
+  var x0 = canvasW * 0.15;
+  var x1 = canvasW * 0.5;
+  var x2 = canvasW * 0.85;
   attractors.push( new Attractor( x0, canvasH / 2 ) );
   attractors.push( new Attractor( x1, canvasH / 2 ) );
-  maxDistance = Math.abs( x1 - x0 ) *0.5;
+  attractors.push( new Attractor( x2, canvasH / 2 ) );
+  maxDistance = Math.abs( x1 - x0 ) * 0.5;
 
   animate();
 }
@@ -37,8 +39,15 @@ function animate() {
     for ( var i=0, len = attractors.length; i < len; i++ ) {
       var attractor = attractors[i];
       var distance = attractor.x - particle.x;
-      var force = Math.abs( distance ) <= maxDistance ? distance : 0;
-      force *= 0.03;
+      var sign = distance < 0 ? -1 : 1;
+      // normalize
+      var force = Math.abs( distance ) < maxDistance ?
+        Math.abs( distance ) / maxDistance : 0;
+      force *= 8;
+      force = distance < 0 ? -force : force;
+
+      // var force = Math.abs( distance ) <= maxDistance ? distance : 0;
+      // force *= 0.05;
       particle.applyForce( force );
     }
   }
