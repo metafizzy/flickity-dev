@@ -1,7 +1,8 @@
 var canvas, ctx;
 var canvasW, canvasH;
 var particle;
-var attractor;
+var attractors = [];
+var maxDistance;
 
 document.addEventListener( 'DOMContentLoaded', init, false );
 
@@ -11,28 +12,35 @@ function init() {
   // set size
   canvasW = canvas.width = window.innerWidth - 20;
   canvasH = canvas.height = window.innerHeight - 80;
+  
 
   canvas.addEventListener( 'mousedown', onMousedown, false );
 
   particle = new Particle( canvasW / 2, canvasH / 2 );
-  attractor = new Attractor( canvasW * 0.3, canvasH / 2 )
+  var x0 = canvasW * 0.3;
+  var x1 = canvasW * 0.8;
+  attractors.push( new Attractor( x0, canvasH / 2 ) );
+  attractors.push( new Attractor( x1, canvasH / 2 ) );
+  maxDistance = Math.abs( x1 - x0 ) *0.3;
 
   animate();
 }
 
 // -------------------------- animate, render, update -------------------------- //
 
+
+ ;
+
 function animate() {
-  // apply force of attractor to particle
+  // apply force of attractors to particle
   if ( !isDragging ) {
-    var distance = attractor.x - particle.x;
-    var maxDistance = 200;
-    var force = Math.max( maxDistance - Math.abs( distance) , 0 );
-    force /= maxDistance;
-    force *= force * force;
-    force *= distance > 0 ? 1 : -1;
-    force *= 10;
-    // particle.applyForce( force );
+    for ( var i=0, len = attractors.length; i < len; i++ ) {
+      var attractor = attractors[i];
+      var distance = attractor.x - particle.x;
+      var force = Math.abs( distance ) <= maxDistance ? distance : 0;
+      force *= 0.05;
+      particle.applyForce( force );
+    }
   }
 
   particle.update();
@@ -56,10 +64,13 @@ function render() {
 
   // render attractor
   ctx.fillStyle = 'hsla(240, 100%, 50%, 0.5)';
-  ctx.beginPath();
-  ctx.arc( attractor.x, attractor.y, 8, 0, Math.PI * 2, true );
-  ctx.fill();
-  ctx.closePath();
+  for ( var i=0, len = attractors.length; i < len; i++ ) {
+    var attractor = attractors[i];
+    ctx.beginPath();
+    ctx.arc( attractor.x, attractor.y, 8, 0, Math.PI * 2, true );
+    ctx.fill();
+    ctx.closePath();
+  }
 }
 
 // -------------------------- mouse -------------------------- //
