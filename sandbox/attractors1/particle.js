@@ -7,14 +7,19 @@ function Particle( x, y ) {
   this.accel = 0;
 }
 
-var friction = 0.05;
+var friction = 0.04;
 
 
 Particle.prototype.update = function() {
   this.velocity += this.accel;
   this.velocity *= ( 1 - friction );
   this.x += this.velocity;
-}
+  this.accel = 0;
+};
+
+Particle.prototype.applyForce = function( force ) {
+  this.accel += force;
+};
 
 window.Particle = Particle;
 

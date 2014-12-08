@@ -1,6 +1,7 @@
 var canvas, ctx;
 var canvasW, canvasH;
 var particle;
+var attractor;
 
 document.addEventListener( 'DOMContentLoaded', init, false );
 
@@ -14,6 +15,7 @@ function init() {
   canvas.addEventListener( 'mousedown', onMousedown, false );
 
   particle = new Particle( canvasW / 2, canvasH / 2 );
+  attractor = new Attractor( canvasW * 0.3, canvasH / 2 )
 
   animate();
 }
@@ -21,11 +23,23 @@ function init() {
 // -------------------------- animate, render, update -------------------------- //
 
 function animate() {
+  // apply force of attractor to particle
+  if ( !isDragging ) {
+    var distance = attractor.x - particle.x;
+    var maxDistance = 300;
+    var force = Math.max( maxDistance - Math.abs( distance) , 0 );
+    force /= maxDistance;
+    force *= force;
+    force *= distance > 0 ? 1 : -1;
+    force *= 2;
+    particle.applyForce( force );
+  }
+
   particle.update();
   // wrap around
-  if ( !isDragging ) {
-    particle.x = ( particle.x + canvasW ) % canvasW;
-  }
+  // if ( !isDragging ) {
+  //   particle.x = ( particle.x + canvasW ) % canvasW;
+  // }
   render();
   rAF( animate );
 }
@@ -37,6 +51,13 @@ function render() {
   ctx.fillStyle = 'hsla(0, 100%, 50%, 0.5)';
   ctx.beginPath();
   ctx.arc( particle.x, particle.y, 15, 0, Math.PI * 2, true );
+  ctx.fill();
+  ctx.closePath();
+
+  // render attractor
+  ctx.fillStyle = 'hsla(240, 100%, 50%, 0.5)';
+  ctx.beginPath();
+  ctx.arc( attractor.x, attractor.y, 8, 0, Math.PI * 2, true );
   ctx.fill();
   ctx.closePath();
 }
