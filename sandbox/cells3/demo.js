@@ -42,7 +42,6 @@ function init() {
 
   slider = new Slider();
 
-
   animate();
 }
 
@@ -61,9 +60,8 @@ function animate() {
 
 function getAttraction() {
   var cell = cells[ selectedIndex ];
-  var attractorX = cell.x + cell.width / 2;
-  var distance = -attractorX - slider.x;
-  var force = distance * 0.03;
+  var distance = -cell.target - slider.x;
+  var force = distance * 0.025;
   return force;
 }
 
@@ -74,13 +72,10 @@ function render() {
 
   // cursor
   var cursorX = canvasW / 2;
+
   ctx.lineWidth = 1;
   ctx.strokeStyle = 'hsla(300, 100%, 40%, 1)';
-  ctx.beginPath();
-  ctx.moveTo( cursorX, 0 );
-  ctx.lineTo( cursorX , canvasH );
-  ctx.stroke();
-  ctx.closePath();
+  line( cursorX, 0, cursorX, canvasH );
 
   // cells
   ctx.save();
@@ -91,9 +86,8 @@ function render() {
     ctx.fillStyle = 'hsla(' + hue + ', 100%, 40%, 0.5)';
     ctx.fillRect( cell.x, 20, cell.width, cell.height );
     // target line
-    var cellTargetX = cell.x + cell.width / 2;
     ctx.strokeStyle  = 'yellow';
-    line( cellTargetX, 40, cellTargetX, cell.height );
+    line( cell.target, 40, cell.target, cell.height );
   }
 
   ctx.restore();
@@ -161,11 +155,10 @@ function dragEnd() {
 
   // get closest attractor to end position
   var minDistance = Infinity;
-  var targetX, distance;
+  var distance;
   for ( var i=0, len = cells.length; i < len; i++ ) {
     var cell = cells[i];
-    targetX = cell.x + cell.width / 2;
-    distance = Math.abs( -estimateX - targetX );
+    distance = Math.abs( -estimateX - cell.target );
     if ( distance < minDistance ) {
       selectedIndex = i;
       minDistance = distance;
@@ -176,9 +169,7 @@ function dragEnd() {
   // boost it
   if ( selectedIndex === prevIndex  ) {
     var selectedCell = cells[ selectedIndex ];
-    targetX = selectedCell.x + selectedCell.width / 2;
-    distance = -slider.x - targetX;
-    // console.log( ~~distance, ~~slider.velocity );
+    distance = -slider.x - selectedCell.target;
     if ( distance > 0 && slider.velocity < -1 && cells[ selectedIndex + 1 ] ) {
       // if moving towards the right, and positive velocity, and the next attractor
       selectedIndex++;

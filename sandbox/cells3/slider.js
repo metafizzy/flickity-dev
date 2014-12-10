@@ -4,12 +4,12 @@ function Slider() {
   this.x = 0;
   this.accel = 0;
   this.velocity = 0;
-  this.friction = 0.05;
+  this.friction = 0.25;
 }
 
 Slider.prototype.update = function() {
   this.velocity += this.accel;
-  // this.velocity *= ( 1 - this.friction );
+  this.velocity *= ( 1 - this.friction );
   this.x += this.velocity;
   // reset acceleration
   this.accel = 0;
