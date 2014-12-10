@@ -113,14 +113,21 @@ function onMousemove( event ) {
 }
 
 function onMouseup( event ) {
-  if ( previousX ) {
-    particle.velocity = ( particle.x - previousX ) / ( currentTime - previousTime );
-    particle.velocity *= 17;
-    estimateX = particle.getRestingPosition();
-    previousX = null;
-  }
+  dragEnd();
   // console.log( particle.velocity );
   isDragging = false;
   window.removeEventListener( 'mousemove', onMousemove, false );
   window.removeEventListener( 'mousemove', onMouseup, false );
+}
+
+function dragEnd() {
+  if ( !previousX ) {
+    return;
+  }
+
+  // set particle velocity
+  particle.velocity = ( particle.x - previousX ) / ( currentTime - previousTime );
+  particle.velocity *= 17;
+  estimateX = particle.getRestingPosition();
+  previousX = null;
 }

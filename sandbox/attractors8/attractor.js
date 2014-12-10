@@ -1,5 +1,3 @@
-// -------------------------- Attractor -------------------------- //
-
 ( function() {
 
 function Attractor( x, y, attraction ) {

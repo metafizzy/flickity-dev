@@ -8,9 +8,6 @@ function Particle( x, y ) {
   this.friction = 0.01;
 }
 
-var friction = 0.3;
-
-
 Particle.prototype.update = function() {
   this.velocity += this.accel;
   this.velocity *= ( 1 - this.friction );

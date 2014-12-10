@@ -3,6 +3,7 @@ var canvasW, canvasH;
 var particle;
 var attractors = [];
 var maxDistance;
+var estimateX;
 
 document.addEventListener( 'DOMContentLoaded', init, false );
 
@@ -11,7 +12,7 @@ function init() {
   ctx = canvas.getContext('2d');
   // set size
   canvasW = canvas.width = window.innerWidth - 20;
-  canvasH = canvas.height = window.innerHeight - 80;
+  canvasH = canvas.height = 240;
   
 
   canvas.addEventListener( 'mousedown', onMousedown, false );
@@ -35,21 +36,15 @@ function init() {
 
 function animate() {
   // apply force of attractors to particle
-  if ( !isDragging ) {
-    for ( var i=0, len = attractors.length; i < len; i++ ) {
-      var attractor = attractors[i];
-      var distance = attractor.x - particle.x;
-      var sign = distance < 0 ? -1 : 1;
-      // normalize
-      var force = Math.abs( distance ) < maxDistance ?
-        Math.abs( distance ) / maxDistance : 0;
-      force *= 8;
-      force = distance < 0 ? -force : force;
-
-      // var force = Math.abs( distance ) <= maxDistance ? distance : 0;
-      // force *= 0.05;
-      particle.applyForce( force );
-    }
+  if ( !isDragging && activeAttractor ) {
+    var attractor = activeAttractor;
+    var distance = attractor.x - particle.x;
+    var sign = distance < 0 ? -1 : 1;
+    // normalize
+    var force = Math.abs( distance ) / maxDistance;
+    force *= 4;
+    force = distance < 0 ? -force : force;
+    particle.applyForce( force );
   }
 
   particle.update();
@@ -66,20 +61,25 @@ function render() {
 
   // render particle
   ctx.fillStyle = 'hsla(0, 100%, 50%, 0.5)';
-  ctx.beginPath();
-  ctx.arc( particle.x, particle.y, 15, 0, Math.PI * 2, true );
-  ctx.fill();
-  ctx.closePath();
+  circle( particle.x, particle.y, 15 );
 
   // render attractor
   ctx.fillStyle = 'hsla(240, 100%, 50%, 0.5)';
   for ( var i=0, len = attractors.length; i < len; i++ ) {
     var attractor = attractors[i];
-    ctx.beginPath();
-    ctx.arc( attractor.x, attractor.y, 8, 0, Math.PI * 2, true );
-    ctx.fill();
-    ctx.closePath();
+    circle( attractor.x, attractor.y, 8 );
   }
+
+  // render estimate
+  ctx.fillStyle = 'hsla(150, 100%, 25%, 0.5)';
+  circle( estimateX, canvasH / 2, 4 );
+}
+
+function circle( x, y, radius ) {
+  ctx.beginPath();
+  ctx.arc( x, y, radius, 0, Math.PI * 2, true );
+  ctx.fill();
+  ctx.closePath();
 }
 
 // -------------------------- mouse -------------------------- //
@@ -93,6 +93,7 @@ function onMousedown( event ) {
   window.addEventListener( 'mouseup', onMouseup, false );
   particle.x = event.pageX;
   particle.velocity = 0;
+
 }
 
 var previousX;
@@ -109,13 +110,36 @@ function onMousemove( event ) {
 }
 
 function onMouseup( event ) {
-  if ( previousX ) {
-    particle.velocity = ( particle.x - previousX ) / ( currentTime - previousTime );
-    particle.velocity *= 17;
-    previousX = null;
-  }
-
+  dragEnd();
+  // console.log( particle.velocity );
   isDragging = false;
   window.removeEventListener( 'mousemove', onMousemove, false );
   window.removeEventListener( 'mousemove', onMouseup, false );
+}
+
+var activeAttractor;
+
+function dragEnd() {
+  if ( !previousX ) {
+    return;
+  }
+
+  // set particle velocity
+  particle.velocity = ( particle.x - previousX ) / ( currentTime - previousTime );
+  particle.velocity *= 17;
+  estimateX = particle.getRestingPosition();
+  // reset previousX
+  previousX = null;
+
+  // get closest attractor to end position
+  var minDistance = Infinity;
+  for ( var i=0, len = attractors.length; i < len; i++ ) {
+    var attractor = attractors[i];
+    var distance = Math.abs( estimateX - attractor.x );
+    if ( distance < minDistance ) {
+      activeAttractor = attractor;
+      minDistance = distance;
+    }
+  }
+
 }

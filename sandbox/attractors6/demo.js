@@ -117,7 +117,7 @@ function onMouseup( event ) {
     particle.velocity *= 17;
     previousX = null;
   }
-  // console.log( particle.velocity );
+
   isDragging = false;
   window.removeEventListener( 'mousemove', onMousemove, false );
   window.removeEventListener( 'mousemove', onMouseup, false );

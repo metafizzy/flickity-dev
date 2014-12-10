@@ -1,3 +1,5 @@
+// -------------------------- demo  -------------------------- //
+
 var canvas, ctx;
 var canvasW, canvasH;
 var particle;
