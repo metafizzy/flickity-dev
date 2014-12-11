@@ -10,7 +10,9 @@ var estimateX = 0;
 var selectedIndex = 0;
 // var cellWidths = [ 0.33, 0.5, 0.2, 0.33, 0.4 ];
 // var cellWidths = [ 0.8, 0.3, 0.8, 0.8, 0.8 ];
-var cellWidths = [ 0.2, 0.2, 0.5, 0.2, 0.3, 0.2, 0.3 ];
+var cellWidths = [ 0.2, 0.2, 0.5, 0.2, 0.3, 0.2, 0.3, 0.2, 0.2, 0.3, 0.2 ];
+// var cellWidths = [ 0.5, 0.4, 0.5, 0.5, 0.4, 0.2, 0.5, 0.5, 0.4, 0.3, 0.5 ];
+// var cellWidths = [ 1, 1, 1, 1, 1 ];
 
 var activeAttractor;
 var activeAttractorIndex = 1;
@@ -62,6 +64,7 @@ function getAttraction() {
   var cell = cells[ selectedIndex ];
   var distance = -cell.target - slider.x;
   var force = distance * 0.025;
+  // force = Math.min( Math.abs( force ), 1 ) * ( force > 0 ? 1 : -1 );
   return force;
 }
 
@@ -72,7 +75,6 @@ function render() {
 
   // cursor
   var cursorX = canvasW / 2;
-
   ctx.lineWidth = 1;
   ctx.strokeStyle = 'hsla(300, 100%, 40%, 1)';
   line( cursorX, 0, cursorX, canvasH );
@@ -90,6 +92,10 @@ function render() {
     line( cell.target, 40, cell.target, cell.height );
   }
 
+  // estimate
+  // ctx.fillStyle = 'hsla(120, 100%, 40%, 0.5)';
+  // circle( -estimateX, canvasH/2, 8 );
+
   ctx.restore();
 }
 
@@ -98,6 +104,13 @@ function line( x1, y1, x2, y2 ) {
   ctx.moveTo( x1, y1 );
   ctx.lineTo( x2, y2 );
   ctx.stroke();
+  ctx.closePath();
+}
+
+function circle( x, y, radius ) {
+  ctx.beginPath();
+  ctx.arc( x, y, radius, 0, Math.PI * 2 );
+  ctx.fill();
   ctx.closePath();
 }
 
