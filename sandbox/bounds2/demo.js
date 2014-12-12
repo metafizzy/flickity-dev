@@ -49,7 +49,7 @@ function animate() {
 function applyBoundForce( boundX, direction ) {
   // left force
   var distance = boundX - particle.x;
-  var force = distance * 0.03;
+  var force = distance * 0.05;
   force = Math.max( force * direction, 0 ) * direction;
   // prevent particle from bounds too far back
   // don't apply force if particle is returning from outside bounds
