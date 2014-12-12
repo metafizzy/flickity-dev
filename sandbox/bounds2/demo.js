@@ -32,47 +32,35 @@ function init() {
 
 
 function animate() {
-  // apply force of attractors to particle
+  // apply force of bounds to particle
   if ( !isDragging ) {
-    // left force
-    var attractor = attractors[0];
-    var distance = attractor.x - particle.x;
-    var force = distance * 0.03;
-    force = Math.max( force, 0 );
-    // prevent particle from bounds too far back
-    // don't apply force if particle is returning from outside bounds
-    if ( force && particle.velocity > 0 ) {
-      // resting position
-      var restPosition = particle.getRestingPosition();
-      if ( restPosition.x > attractor.x ) {
-        force = ( attractor.x - particle.x ) / restPosition.frictionSum - particle.velocity;
-      }
-    }
-    particle.applyForce( force );
-
-
-    // right bound force
-    attractor = attractors[1];
-    distance = attractor.x - particle.x;
-    force = distance * 0.03;
-    force = Math.min( force, 0 );
-    // prevent particle from bounds too far back
-    // don't apply force if particle is returning from outside bounds
-    if ( force && particle.velocity < 0 ) {
-      // resting position
-      var restPosition = particle.getRestingPosition();
-      if ( restPosition.x < attractor.x ) {
-        force = ( attractor.x - particle.x ) / restPosition.frictionSum - particle.velocity;
-      }
-    }
-    particle.applyForce( force );
-
+    // left bound
+    applyBoundForce( attractors[0].x, 1 );
+    // right bound
+    applyBoundForce( attractors[1].x, -1 );
   }
 
   particle.update();
 
   render();
   rAF( animate );
+}
+
+function applyBoundForce( boundX, direction ) {
+  // left force
+  var distance = boundX - particle.x;
+  var force = distance * 0.03;
+  force = Math.max( force * direction, 0 ) * direction;
+  // prevent particle from bounds too far back
+  // don't apply force if particle is returning from outside bounds
+  if ( force && particle.velocity * direction > 0 ) {
+    // resting position
+    var restPosition = particle.getRestingPosition();
+    if ( restPosition.x * direction > boundX * direction ) {
+      force = ( boundX - particle.x ) / restPosition.frictionSum - particle.velocity;
+    }
+  }
+  particle.applyForce( force );
 }
 
 
