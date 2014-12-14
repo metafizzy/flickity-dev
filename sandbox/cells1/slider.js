@@ -24,7 +24,7 @@ Slider.prototype.getRestingPosition = function() {
   var restingVelo = 0.07;
   var velo = this.velocity;
   var restX = this.x;
-  while ( velo > restingVelo ) {
+  while ( Math.abs( velo ) > restingVelo ) {
     velo *= 1 - this.friction;
     restX += velo;
   }
