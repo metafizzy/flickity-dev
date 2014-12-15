@@ -1,12 +1,10 @@
-// ----- Slider ----- //
-
 ( function() {
 
 function Slider() {
   this.x = 0;
   this.accel = 0;
   this.velocity = 0;
-  this.friction = 0.3;
+  this.friction = 0.25;
 }
 
 Slider.prototype.update = function() {
