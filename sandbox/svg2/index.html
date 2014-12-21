@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+
+  <title>svg2</title>
+
+  <style>
+  .container { width: 33%; }
+  .circle1 { fill: #F90; }
+  .circle2 { fill: #09F; }
+  svg {
+    width: 100%;
+    height: 100%;
+    border: 1px solid;
+  }
+  .arrow { fill: #09F; }
+  </style>
+
+</head>
+<body>
+
+  <h1>svg2</h1>
+
+<div class="container">
+  <svg viewbox="0 0 100 100">
+    <path class="arrow" d="M 50 0 L 60 10 L 20 50 L 60 90 L 50 100 L 0 50 Z">
+  </svg>
+</div>
+
+<script>
+window.onload = function() {
+  var svgURI = 'http://www.w3.org/2000/svg';
+  var svg = document.createElementNS( svgURI, 'svg');
+  svg.setAttribute( 'viewBox', '0 0 100 100' );
+  var path = document.createElementNS( svgURI, 'path');
+  path.setAttribute( 'd', 'M 50 0 L 60 10 L 20 50 L 60 90 L 50 100 L 0 50 Z' );
+  path.setAttribute( 'class', 'arrow' );
+  svg.appendChild( path );
+  console.log( typeof svg );
+  document.querySelector('.container').appendChild( svg );
+}
+
+window.check = ( function() {
+  var checked;
+  function checker() {
+    if ( checked !== undefined ) {
+      return checked;
+    }
+    console.log('checking');
+    checked = Math.random() > 0.5;
+    return checked;
+  }
+  return checker;
+})();
+
+</script>
+
+</body>
+</html>
